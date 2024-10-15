@@ -1,0 +1,37 @@
+﻿<UserControl x:Class="Fresh_Swimming.Views.StartupView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Fresh_Swimming.Views"
+             mc:Ignorable="d" 
+             Background="White"
+             d:Height="450" d:Width="800">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <TextBlock Text="Fresh Swimming - Pool Database" Margin="20" FontWeight="Bold" FontSize="32" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button Click="ChangeFrameToManageUsers_Click">
+                <TextBlock Text="Manage Users"/>
+            </Button>
+            <Button Grid.Column="1" Click="ChangeFrameToManageLanes_Click">
+                <TextBlock Text="Manage Lanes"/>
+            </Button>
+            <Button Grid.Column="2" Click="ChangeFrameToViewReservations_Click">
+                <TextBlock Text="View Reservations"/>
+            </Button>
+            <Button Grid.Column="3" Click="ChangeFrameToViewStatistics_Click">
+                <TextBlock Text="View Statistics"/>
+            </Button>
+        </Grid>
+    </Grid>
+</UserControl>

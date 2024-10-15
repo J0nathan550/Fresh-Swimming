@@ -1,0 +1,6 @@
+﻿<Application x:Class="Fresh_Swimming.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Fresh_Swimming"
+             StartupUri="/Views/MainWindowView.xaml">
+</Application>

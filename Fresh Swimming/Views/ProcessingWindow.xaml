@@ -1,0 +1,16 @@
+﻿<Window x:Class="Fresh_Swimming.Views.ProcessingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Fresh_Swimming.Views"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterOwner"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        Title="Fresh Swimming" Height="120" Width="250" Topmost="True">
+    <Border SnapsToDevicePixels="True" BorderThickness="1" BorderBrush="Black">
+        <TextBlock Margin="40" Text="Processing..." FontWeight="Bold" FontSize="24" VerticalAlignment="Center" HorizontalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+    </Border>
+</Window>
