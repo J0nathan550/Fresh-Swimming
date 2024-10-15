@@ -5,11 +5,11 @@ namespace Fresh_Swimming.Views;
 
 public partial class ReservationView : UserControl
 {
-    public static readonly ReservationViewModel viewModel = new();
+    public static ReservationViewModel ViewModel { get; set; } = new();
     
     public ReservationView()
     {
-        DataContext = viewModel;
+        DataContext = ViewModel;
         InitializeComponent();
     }
 }

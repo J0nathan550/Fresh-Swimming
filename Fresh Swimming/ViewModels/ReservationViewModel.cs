@@ -20,7 +20,7 @@ public partial class ReservationViewModel : ObservableObject
     [ObservableProperty]
     private bool _isCreateReservButtonEnabled = false;
     [ObservableProperty]
-    private DateTime _selectedDate;
+    private DateTime _selectedDate = DateTime.Now;
     [ObservableProperty]
     private DataGridCellInfo _currentSelectedCell;
     [ObservableProperty]
@@ -66,6 +66,7 @@ public partial class ReservationViewModel : ObservableObject
 
     partial void OnCurrentSelectedCellChanging(DataGridCellInfo value)
     {
+        if(_userID == -1) return;
         ProcessingWindow processingWindow = new();
         processingWindow.Owner = MainWindowView.Instance;
         processingWindow.Show();

@@ -9,12 +9,12 @@ public partial class StartupView : UserControl
 
     private void ChangeFrameToManageLanes_Click(object sender, RoutedEventArgs e) => MainWindowView.Instance!.ContentFrame.Navigate(new Uri("/Views/ManageLanesView.xaml", UriKind.RelativeOrAbsolute));
     private void ChangeFrameToManageUsers_Click(object sender, RoutedEventArgs e) => MainWindowView.Instance!.ContentFrame.Navigate(new Uri("/Views/ManageUsersView.xaml", UriKind.RelativeOrAbsolute));
+    private void ChangeFrameToManageHolidays_Click(object sender, RoutedEventArgs e) => MainWindowView.Instance!.ContentFrame.Navigate(new Uri("/Views/ManageHolidaysView.xaml", UriKind.RelativeOrAbsolute));
     private void ChangeFrameToViewStatistics_Click(object sender, RoutedEventArgs e) => MainWindowView.Instance!.ContentFrame.Navigate(new Uri("/Views/StatisticsView.xaml", UriKind.RelativeOrAbsolute));
-    
+
     private void ChangeFrameToViewReservations_Click(object sender, RoutedEventArgs e)
     {
-        ReservationView.viewModel.Initialize(-1);
+        ReservationView.ViewModel.Initialize(-1);
         MainWindowView.Instance!.ContentFrame.Navigate(new Uri("/Views/ReservationView.xaml", UriKind.RelativeOrAbsolute));
     }
-
 }

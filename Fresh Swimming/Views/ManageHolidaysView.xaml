@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="Fresh_Swimming.Views.ManageLanesView"
+﻿<UserControl x:Class="Fresh_Swimming.Views.ManageHolidaysView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Fresh_Swimming" d:DataContext="{d:DesignInstance Type=local:ManageLanesViewModel}"
+        xmlns:local="clr-namespace:Fresh_Swimming" xmlns:viewmodels="clr-namespace:Fresh_Swimming.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:ManageHolidaysViewModel}"
         d:Background="White"
         d:Width="800" d:Height="450"
         mc:Ignorable="d">
@@ -17,20 +17,20 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="{Binding ColumnWidth}"/>
         </Grid.ColumnDefinitions>
-        <Button Margin="5" Grid.ColumnSpan="2" Command="{Binding CreateLaneShowPanelCommand}">
-            <TextBlock Text="Add Lane" TextTrimming="CharacterEllipsis"/>
+        <Button Margin="5" Grid.ColumnSpan="2" Command="{Binding CreateHolidayShowPanelCommand}">
+            <TextBlock Text="Add Holiday" TextTrimming="CharacterEllipsis"/>
         </Button>
-        <DataGrid Name="DataGridLane" Grid.Row="1" Margin="5" Grid.Column="0" ItemsSource="{Binding Lanes}" AutoGenerateColumns="False" AlternatingRowBackground="#F0F0F0" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False">
+        <DataGrid Name="DataGridHolidays" Grid.Row="1" Margin="5" Grid.Column="0" ItemsSource="{Binding Holidays}" AutoGenerateColumns="False" AlternatingRowBackground="#F0F0F0" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                <DataGridTextColumn Header="Cost per Hour" Binding="{Binding CostPerHourAsString}"/>
-                <DataGridTextColumn Header="Length" Binding="{Binding Length}"/>
-                <DataGridTextColumn Header="Depth" Binding="{Binding Depth}"/>
-                <DataGridTemplateColumn Header="Delete Lane">
+                <DataGridTextColumn Header="Date" Binding="{Binding DateAsText}"/>
+                <DataGridTextColumn Header="Allow to Enter" Binding="{Binding AllowToEnter}"/>
+                <DataGridTextColumn Header="Price for Entry" Binding="{Binding PriceForEntry}"/>
+                <DataGridTemplateColumn Header="Delete Holiday">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button Command="{Binding DeleteLaneCommand}" CommandParameter="{Binding ID}">
-                                <TextBlock Text="Delete Lane" TextTrimming="CharacterEllipsis"/>
+                            <Button Command="{Binding DeleteHolidayCommand}" CommandParameter="{Binding ID}">
+                                <TextBlock Text="Delete Holiday" TextTrimming="CharacterEllipsis"/>
                             </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
@@ -40,14 +40,14 @@
         <StackPanel Grid.Column="1" Grid.Row="1">
             <TextBlock Margin="5" Text="Name:"/>
             <TextBox Margin="5" Text="{Binding TextBoxName}"/>
-            <TextBlock Margin="5" Text="Cost per hour:"/>
-            <TextBox Margin="5" Text="{Binding TextBoxCostPerHour}"/>
-            <TextBlock Margin="5" Text="Length:"/>
-            <TextBox Margin="5" Text="{Binding TextBoxLength}"/>
-            <TextBlock Margin="5" Text="Depth:"/>
-            <TextBox Margin="5" Text="{Binding TextBoxDepth}"/>
+            <TextBlock Margin="5" Text="Date:"/>
+            <Calendar Margin="5" SelectedDate="{Binding SelectedDateCalendar}"/>
+            <TextBlock Margin="5" Text="Allow to Enter:"/>
+            <CheckBox Margin="5" IsChecked="{Binding AllowToEnterCheckBox}"/>
+            <TextBlock Margin="5" Text="Price per Entry:"/>
+            <TextBox Margin="5" Text="{Binding TextBoxPricePerEntry}"/>
             <StackPanel Orientation="Horizontal">
-                <Button Padding="5" Margin="5" Content="Create Lane" Command="{Binding CreateLaneCommand}"/>
+                <Button Padding="5" Margin="5" Content="Create Holiday" Command="{Binding CreateHolidayCommand}"/>
                 <Button Padding="5" Margin="5" Content="Cancel" Command="{Binding CancelCreationCommand}"/>
             </StackPanel>
         </StackPanel>

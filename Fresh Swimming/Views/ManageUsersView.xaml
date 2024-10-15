@@ -20,16 +20,30 @@
         <Button Margin="5" Command="{Binding CreateUserShowPanelCommand}" Grid.ColumnSpan="2">
             <TextBlock Text="Add User" TextTrimming="CharacterEllipsis"/>
         </Button>
-        <DataGrid Grid.Row="1" Margin="5" Grid.Column="0" ItemsSource="{Binding Users}" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" AlternatingRowBackground="#F0F0F0">
+        <DataGrid Name="DataGridUsers" Grid.Row="1" Margin="5" Grid.Column="0" ItemsSource="{Binding Users}" AutoGenerateColumns="False" AlternatingRowBackground="#F0F0F0" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
                 <DataGridTextColumn Header="Email" Binding="{Binding Email}"/>
                 <DataGridTextColumn Header="Phone Number" Binding="{Binding PhoneNumber}"/>
-                <DataGridTextColumn Header="Skill" Binding="{Binding SkillAsText}"/>
+                <DataGridTemplateColumn Header="Skill">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox SelectedIndex="{Binding Skill, UpdateSourceTrigger=PropertyChanged}">
+                                <ComboBoxItem Content="None"/>
+                                <ComboBoxItem Content="Beginner"/>
+                                <ComboBoxItem Content="Intermediate"/>
+                                <ComboBoxItem Content="Advanced"/>
+                                <ComboBoxItem Content="Expert"/>
+                            </ComboBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTemplateColumn Header="Color">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <TextBlock Background="{Binding ColorAsBrush}" Foreground="{Binding TextForColor}" Text="{Binding Color}"/>
+                            <Button Background="{Binding ColorAsBrush}" Padding="0" BorderThickness="0" Command="{Binding ChangeColorOfUserCommand}" CommandParameter="{Binding Id}">
+                                <TextBlock Foreground="{Binding TextForColor}" Text="{Binding Color}"/>
+                            </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
@@ -47,6 +61,15 @@
                         <DataTemplate>
                             <Button Command="{Binding AddPaymentCommand}" CommandParameter="{Binding Id}">
                                 <TextBlock Text="Add Payment"/>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Delete User">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Command="{Binding DeleteUserCommand}" CommandParameter="{Binding Id}">
+                                <TextBlock Text="Delete User"/>
                             </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

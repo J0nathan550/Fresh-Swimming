@@ -19,6 +19,7 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
+                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
             <Button Click="ChangeFrameToManageUsers_Click">
                 <TextBlock Text="Manage Users"/>
@@ -26,10 +27,13 @@
             <Button Grid.Column="1" Click="ChangeFrameToManageLanes_Click">
                 <TextBlock Text="Manage Lanes"/>
             </Button>
-            <Button Grid.Column="2" Click="ChangeFrameToViewReservations_Click">
+            <Button Grid.Column="2" Click="ChangeFrameToManageHolidays_Click">
+                <TextBlock Text="Manage Holidays"/>
+            </Button>
+            <Button Grid.Column="3" Click="ChangeFrameToViewReservations_Click">
                 <TextBlock Text="View Reservations"/>
             </Button>
-            <Button Grid.Column="3" Click="ChangeFrameToViewStatistics_Click">
+            <Button Grid.Column="4" Click="ChangeFrameToViewStatistics_Click">
                 <TextBlock Text="View Statistics"/>
             </Button>
         </Grid>

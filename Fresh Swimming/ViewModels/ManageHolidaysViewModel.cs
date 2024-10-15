@@ -7,19 +7,19 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Fresh_Swimming;
+namespace Fresh_Swimming.ViewModels;
 
-public partial class ManageLanesViewModel : ObservableObject
+public partial class ManageHolidaysViewModel : ObservableObject
 {
     [ObservableProperty]
-    private ObservableCollection<Lane> lanes = [];
+    private ObservableCollection<Holiday> _holidays = [];
 
-    public ManageLanesViewModel()
+    public ManageHolidaysViewModel()
     {
         Initialize();
     }
 
-    private async void Initialize() => Lanes = await Database.GetLanesAsync();
+    private async void Initialize() => Holidays = await Database.GetHolidaysAsync();
 
     [ObservableProperty]
     private double _columnWidth = 0;
@@ -28,45 +28,34 @@ public partial class ManageLanesViewModel : ObservableObject
     private string? _textBoxName = string.Empty;
 
     [ObservableProperty]
-    private string? _textBoxCostPerHour = "0";
+    private DateTime _selectedDateCalendar = DateTime.Now;
 
     [ObservableProperty]
-    private string? _textBoxLength = "0";
-    
-    [ObservableProperty]
-    private string? _textBoxDepth = "0";
+    private bool? _allowToEnterCheckBox;
 
+    [ObservableProperty]
+    private string? _textBoxPricePerEntry;
 
     [RelayCommand]
-    private async Task CreateLaneAsync()
+    private async Task CreateHolidayAsync()
     {
         if (string.IsNullOrWhiteSpace(TextBoxName))
         {
             MessageBox.Show("Please specify lane name!");
             return;
         }
-        if (!float.TryParse(TextBoxCostPerHour, out float resultCost))
+        if (!float.TryParse(TextBoxPricePerEntry, out float resultPrice))
         {
-            MessageBox.Show("Please specify lane cost per hour!");
+            MessageBox.Show("Please specify price!");
             return;
         }
-        if (!float.TryParse(TextBoxLength, out float resultLength))
+        if (await Database.CheckHolidayAsync(TextBoxName))
         {
-            MessageBox.Show("Please specify lane length!");
+            MessageBox.Show("This holiday already exist!");
             return;
         }
-        if (!float.TryParse(TextBoxDepth, out float resultDepth))
-        {
-            MessageBox.Show("Please specify lane depth!");
-            return;
-        }
-        if (await Database.CheckLaneAsync(TextBoxName))
-        {
-            MessageBox.Show("This lane already exist!");
-            return;
-        }
-        await Database.CreateLaneAsync(TextBoxName, resultCost, resultLength, resultDepth);
-        Lanes = await Database.GetLanesAsync();
+        await Database.CreateHolidayAsync(TextBoxName, AllowToEnterCheckBox, SelectedDateCalendar, resultPrice);
+        Holidays = await Database.GetHolidaysAsync();
         ColumnWidth = 0;
     }
 
@@ -74,20 +63,19 @@ public partial class ManageLanesViewModel : ObservableObject
     private static void GoBackToMainView() => MainWindowView.Instance!.ContentFrame.Navigate(new Uri("/Views/StartupView.xaml", UriKind.RelativeOrAbsolute));
 
     [RelayCommand]
-    private void CreateLaneShowPanel()
+    private void CreateHolidayShowPanel()
     {
         ColumnWidth = 200;
         TextBoxName = string.Empty;
-        TextBoxCostPerHour = "0";
-        TextBoxLength = "0";
-        TextBoxDepth = "0";
+        TextBoxPricePerEntry = "0";
+        AllowToEnterCheckBox = false;
     }
 
     [RelayCommand]
     private void CancelCreation() => ColumnWidth = 0f;
 
     public void RegisterDataGrid(DataGrid dataGrid) => dataGrid.CellEditEnding += DataGrid_CellEditEnding;
-
+    
     private async void DataGrid_CellEditEnding(object? sender, DataGridCellEditEndingEventArgs e)
     {
         if (e.EditAction == DataGridEditAction.Commit)
@@ -107,19 +95,19 @@ public partial class ManageLanesViewModel : ObservableObject
                             }
                             lane.Name = newValue;
                             break;
-                        case "CostPerHour":
+                        case "Date":
                             if (float.TryParse(newValue, out float costPerHour))
                             {
                                 lane.CostPerHour = costPerHour;
                             }
                             break;
-                        case "Length":
+                        case "Allow to Enter":
                             if (float.TryParse(newValue, out float length))
                             {
                                 lane.Length = length;
                             }
                             break;
-                        case "Depth":
+                        case "Price for Entry":
                             if (float.TryParse(newValue, out float depth))
                             {
                                 lane.Depth = depth;

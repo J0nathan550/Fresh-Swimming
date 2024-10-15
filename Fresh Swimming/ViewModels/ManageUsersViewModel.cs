@@ -5,7 +5,9 @@ using Fresh_Swimming.Helpers;
 using Fresh_Swimming.Models;
 using Fresh_Swimming.Views;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace Fresh_Swimming;
@@ -13,12 +15,9 @@ namespace Fresh_Swimming;
 public partial class ManageUsersViewModel : ObservableObject
 {
     [ObservableProperty]
-    private ObservableCollection<User> users = [];
+    private ObservableCollection<User> _users = [];
 
-    public ManageUsersViewModel()
-    {
-        Initialize();
-    }
+    public ManageUsersViewModel() => Initialize();
 
     private async void Initialize() => Users = await Database.GetUsersAsync();
 
@@ -39,7 +38,7 @@ public partial class ManageUsersViewModel : ObservableObject
 
     [ObservableProperty]
     private byte _comboBoxSkill = 0;
-
+    
     [RelayCommand]
     private async Task CreateUserAsync()
     {
@@ -62,7 +61,8 @@ public partial class ManageUsersViewModel : ObservableObject
     [RelayCommand]
     private void ShowColorPicker()
     {
-        ColorPickerWindow.ShowDialog(out Color color);
+        bool ok = ColorPickerWindow.ShowDialog(out Color color);
+        if (!ok) return;
         UserColor = new SolidColorBrush(color);
     }
 
@@ -82,4 +82,33 @@ public partial class ManageUsersViewModel : ObservableObject
 
     [RelayCommand]
     private void CancelCreation() => ColumnWidth = 0f;
+
+    public void RegisterDataGrid(DataGrid dataGrid) => dataGrid.CellEditEnding += DataGrid_CellEditEnding;
+
+    private async void DataGrid_CellEditEnding(object? sender, DataGridCellEditEndingEventArgs e)
+    {
+        if (e.EditAction == DataGridEditAction.Commit)
+        {
+            if (e.Row.Item is User user)
+            {
+                if (e.Column is DataGridTextColumn column)
+                {
+                    string newValue = ((TextBox)e.EditingElement).Text;
+                    switch (column.Header.ToString())
+                    {
+                        case "Name":
+                            user.Name = newValue;
+                            break;
+                        case "Email":
+                            user.Email = newValue;
+                            break;
+                        case "PhoneNumber":
+                            user.PhoneNumber = newValue;
+                            break;
+                    }
+                    await Database.UpdateUserAsync(user.Id, user.Name, user.Email!, user.PhoneNumber!, user.Skill, user.Color);
+                }
+            }
+        }
+    }
 }
