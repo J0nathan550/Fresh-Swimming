@@ -9,6 +9,7 @@ public class Reservation
     public string? Length {  get; set; }
     public string? Depth {  get; set; }
     public string[] Hours { get; set; } = [];
+    public bool IsHoliday { get; set; }
     public SolidColorBrush[] Colors { get; set; } = [];
     public SolidColorBrush[] ColorsForeground { get; set; } = [];
 }

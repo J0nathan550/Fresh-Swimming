@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Fresh_Swimming.Models.Holiday">
+    <Position X="3.75" Y="1" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAEAAAgAAABEGAABQAgAAAAAAAAABAAAAAAAA=</HashCode>
+      <FileName>Models\Holiday.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Fresh_Swimming.Models.Lane">
+    <Position X="7.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAgAAAAAAAAARAAAAABCAgAAAAAAAAIAA=</HashCode>
+      <FileName>Models\Lane.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Fresh_Swimming.Models.Reservation">
+    <Position X="3.75" Y="4.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAEAAAAAAAQAAAAAAAAAABAAAAAAAAgAAAAhAAAIAA=</HashCode>
+      <FileName>Models\Reservation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Fresh_Swimming.Models.User">
+    <Position X="5.75" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIKBAAAADAAAAAEAAAAUAQAAAAAAAAAAAAAggAAKAA=</HashCode>
+      <FileName>Models\User.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

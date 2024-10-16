@@ -70,47 +70,55 @@ public partial class ReservationViewModel : ObservableObject
         ProcessingWindow processingWindow = new();
         processingWindow.Owner = MainWindowView.Instance;
         processingWindow.Show();
-        if (value.Column == null || value.Item == null)
+        try
         {
-            processingWindow.Close();
-            return;
-        }
-        Reservation? reservation = value.Item as Reservation;
-        int columnIndex = value.Column.DisplayIndex;
-        if (reservation == null) return;
-        if (reservation.Hours != null && reservation.Hours.Length != 0 && reservation.Hours[columnIndex - 1] != null)
-        {
-            IsCreateReservButtonEnabled = false;
-            return;
-        }
-        if (columnIndex < 1 || columnIndex > 13)
-        {
-            IsCreateReservButtonEnabled = false;
-            return;
-        }
-        if (reservation.LaneName == _laneName)
-        {
-            if (_startHour > columnIndex + 7)
+            if (value.Column == null || value.Item == null)
             {
-                _endHour = _startHour;
-                _startHour = columnIndex + 7;
+                return;
+            }
+            Reservation? reservation = value.Item as Reservation;
+            int columnIndex = value.Column.DisplayIndex;
+            if (reservation == null)
+            {
+                return;
+            }
+            if (columnIndex < 1 || columnIndex > 13)
+            {
+                IsCreateReservButtonEnabled = false;
+                return;
+            }
+            if (reservation.Hours != null && reservation.Hours.Length != 0 && reservation.Hours[columnIndex - 1] != null)
+            {
+                IsCreateReservButtonEnabled = false;
+                return;
+            }
+            if (reservation.LaneName == _laneName)
+            {
+                if (_startHour > columnIndex + 7)
+                {
+                    _endHour = _startHour;
+                    _startHour = columnIndex + 7;
+                }
+                else
+                {
+                    _endHour = columnIndex + 7;
+                }
+                Confirmation = $"From {_startHour} to {_endHour} on {_laneName}";
+                IsCreateReservButtonEnabled = true;
             }
             else
             {
-                _endHour = columnIndex + 7;
+                _laneName = reservation.LaneName!;
+                _startHour = columnIndex + 7;
+                _endHour = -1;
+                Confirmation = $"Start hour is: {_startHour} on {_laneName}";
+                IsCreateReservButtonEnabled = false;
             }
-            Confirmation = $"From {_startHour} to {_endHour} on {_laneName}";
-            IsCreateReservButtonEnabled = true;
         }
-        else
+        finally 
         {
-            _laneName = reservation.LaneName!;
-            _startHour = columnIndex + 7;
-            _endHour = -1;
-            Confirmation = $"Start hour is: {_startHour} on {_laneName}";
-            IsCreateReservButtonEnabled = false;
+            processingWindow.Close();
         }
-        processingWindow.Close();
     }
 
     [RelayCommand]

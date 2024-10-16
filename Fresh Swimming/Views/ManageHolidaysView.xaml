@@ -23,9 +23,33 @@
         <DataGrid Name="DataGridHolidays" Grid.Row="1" Margin="5" Grid.Column="0" ItemsSource="{Binding Holidays}" AutoGenerateColumns="False" AlternatingRowBackground="#F0F0F0" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-                <DataGridTextColumn Header="Date" Binding="{Binding DateAsText}"/>
-                <DataGridTextColumn Header="Allow to Enter" Binding="{Binding AllowToEnter}"/>
-                <DataGridTextColumn Header="Price for Entry" Binding="{Binding PriceForEntry}"/>
+                <DataGridTemplateColumn Header="Date">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding DateAsText}" TextTrimming="CharacterEllipsis"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                    <DataGridTemplateColumn.CellEditingTemplate>
+                        <DataTemplate>
+                            <DatePicker SelectedDate="{Binding Date, UpdateSourceTrigger=PropertyChanged}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellEditingTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Allow to Enter">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ComboBox SelectedIndex="{Binding AllowToEnter, UpdateSourceTrigger=PropertyChanged}">
+                                <ComboBoxItem>
+                                    <TextBlock Text="False" TextTrimming="CharacterEllipsis"/>
+                                </ComboBoxItem>
+                                <ComboBoxItem>
+                                    <TextBlock Text="True" TextTrimming="CharacterEllipsis"/>
+                                </ComboBoxItem>
+                            </ComboBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Price per Entry" Binding="{Binding PricePerEntryAsString}"/>
                 <DataGridTemplateColumn Header="Delete Holiday">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>

@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Fresh_Swimming.Models;
 using MySqlConnector;
+using ScottPlot.Colormaps;
 using System.Collections.ObjectModel;
 using System.Data;
 using System.Windows;
@@ -11,6 +12,7 @@ namespace Fresh_Swimming.Helpers;
 public static class Database
 {
     private static readonly string MYSQL_CONNECTION_STRING = "Server=127.0.0.1;Database=fresh_swimming;Uid=root;Pwd=;";
+    private static readonly SolidColorBrush ColorBrushRed = new(Colors.Red);
     private static readonly SolidColorBrush ColorBrushWhite = new(Colors.White);
     private static readonly SolidColorBrush ColorBrushBlack = new(Colors.Black);
 
@@ -462,6 +464,35 @@ public static class Database
         }
     }
 
+    public static async Task UpdateHolidayAsync(int holidayID, string? name, DateTime date, byte allowToEnter, float pricePerEntry)
+    {
+        try
+        {
+            using IDbConnection dbConnection = new MySqlConnection(MYSQL_CONNECTION_STRING);
+            string sqlQuery = @"UPDATE holidays SET Name = @Name, Date = @Date, AllowToEnter = @AllowToEnter, PricePerEntry = @PricePerEntry WHERE ID = @HolidayID";
+            await dbConnection.ExecuteAsync(sqlQuery, new
+            {
+                HolidayID = holidayID,
+                Name = name,
+                Date = date,
+                AllowToEnter = allowToEnter,
+                PricePerEntry = pricePerEntry
+            });
+        }
+        catch
+        {
+            MessageBoxResult result = MessageBox.Show("Failed to update holiday. Would you like to try again?", "Database Error", MessageBoxButton.YesNo, MessageBoxImage.Error);
+            if (result == MessageBoxResult.Yes)
+            {
+                await UpdateHolidayAsync(holidayID, name, date, allowToEnter, pricePerEntry); // Retry the operation
+            }
+            else
+            {
+                MessageBox.Show("Holiday update aborted.", "Operation Aborted", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+    }
+
     public static async Task<ObservableCollection<Reservation>> GetReservationsAsync(DateTime date)
     {
         try
@@ -472,6 +503,9 @@ public static class Database
             // Get all lanes
             string sqlQuery = "SELECT * FROM lane";
             List<Lane> lanes = (await dbConnection.QueryAsync<Lane>(sqlQuery)).ToList();
+
+            sqlQuery = "SELECT * FROM holidays WHERE Date = @Date";
+            Holiday? holiday = await dbConnection.QueryFirstOrDefaultAsync<Holiday>(sqlQuery, new { Date = dateTwo });
 
             Dictionary<string, Reservation> hashMapReservations = [];
             ObservableCollection<Reservation> reservations = [];
@@ -491,15 +525,46 @@ public static class Database
                 }
                 else
                 {
-                    reservation = new Reservation
+                    if (holiday != null)
                     {
-                        LaneName = laneName,
-                        CostPerHour = lane.CostPerHour + "$",
-                        Length = lane.Length.ToString(),
-                        Depth = lane.Depth.ToString()
-                    };
+                        string laneCost = holiday.AllowToEnter == 1 ? holiday.PricePerEntry + "$" : "N/A";
+
+                        reservation = new Reservation
+                        {
+                            LaneName = laneName,
+                            CostPerHour = laneCost,
+                            IsHoliday = holiday.AllowToEnter == 0,
+                            Length = lane.Length.ToString(),
+                            Depth = lane.Depth.ToString()
+                        };
+                        if (holiday != null && holiday.AllowToEnter == 0)
+                        {
+                            reservation.Hours =
+                            [
+                                "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A",
+                            ];
+                            reservation.Colors =
+                            [
+                                ColorBrushRed, ColorBrushRed, ColorBrushRed, ColorBrushRed, ColorBrushRed,
+                                ColorBrushRed, ColorBrushRed, ColorBrushRed, ColorBrushRed, ColorBrushRed,
+                                ColorBrushRed, ColorBrushRed, ColorBrushRed
+                            ];
+                        }
+                    }
+                    else
+                    {
+                        reservation = new Reservation
+                        {
+                            LaneName = laneName,
+                            CostPerHour = lane.CostPerHour + "$",
+                            IsHoliday = false,
+                            Length = lane.Length.ToString(),
+                            Depth = lane.Depth.ToString()
+                        };
+                    }
                     hashMapReservations[laneName] = reservation;
                 }
+
 
                 foreach (dynamic item in listReservation)
                 {
@@ -760,12 +825,19 @@ public static class Database
         try
         {
             using IDbConnection dbConnection = new MySqlConnection(MYSQL_CONNECTION_STRING);
-            string sqlQuery = "SELECT lane.ID, lane.CostPerHour, reservation.StartHour, reservation.EndHour FROM reservation LEFT JOIN lane ON reservation.FK_Lane = lane.ID WHERE reservation.Paid = 0 AND reservation.FK_User = @UserID";
-
+            string sqlQuery = "SELECT lane.ID, lane.CostPerHour, reservation.StartHour, reservation.EndHour, reservation.Date FROM reservation LEFT JOIN lane ON reservation.FK_Lane = lane.ID WHERE reservation.Paid = 0 AND reservation.FK_User = @UserID";
             IEnumerable<dynamic> paymentPerLane = await dbConnection.QueryAsync<dynamic>(sqlQuery, new { UserID = userID });
+            sqlQuery = "SELECT * FROM holidays";
+            IEnumerable<dynamic> holidays = await dbConnection.QueryAsync<dynamic>(sqlQuery);
+            Dictionary<DateTime, float> holidaysPayment = [];
             HashSet<int> usedLanes = [];
             float amountToPay = 0.0f;
             int totalHours = 0;
+
+            foreach (var holiday in holidays)
+            {
+                holidaysPayment[holiday.Date] = holiday.AllowToEnter ? holiday.PricePerEntry : 0;
+            }
 
             foreach (dynamic item in paymentPerLane)
             {
@@ -775,7 +847,8 @@ public static class Database
                 {
                     usedLanes.Add(item.ID);
                 }
-                amountToPay += item.CostPerHour * hours;
+                float cost = (holidaysPayment.ContainsKey(item.Date) ? holidaysPayment[item.Date] : item.CostPerHour) ?? 0;
+                amountToPay += cost * hours;
             }
 
             if (totalHours == 0)

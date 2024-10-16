@@ -41,7 +41,7 @@ public partial class ManageHolidaysViewModel : ObservableObject
     {
         if (string.IsNullOrWhiteSpace(TextBoxName))
         {
-            MessageBox.Show("Please specify lane name!");
+            MessageBox.Show("Please specify holiday name!");
             return;
         }
         if (!float.TryParse(TextBoxPricePerEntry, out float resultPrice))
@@ -80,7 +80,7 @@ public partial class ManageHolidaysViewModel : ObservableObject
     {
         if (e.EditAction == DataGridEditAction.Commit)
         {
-            if (e.Row.Item is Lane lane)
+            if (e.Row.Item is Holiday holiday)
             {
                 if (e.Column is DataGridTextColumn column)
                 {
@@ -90,32 +90,19 @@ public partial class ManageHolidaysViewModel : ObservableObject
                         case "Name":
                             if (string.IsNullOrEmpty(newValue))
                             {
-                                ((TextBox)e.EditingElement).Text = lane.Name;
+                                ((TextBox)e.EditingElement).Text = holiday.Name;
                                 return;
                             }
-                            lane.Name = newValue;
+                            holiday.Name = newValue;
                             break;
-                        case "Date":
-                            if (float.TryParse(newValue, out float costPerHour))
+                        case "Price per Entry":
+                            if (float.TryParse(newValue, out float price))
                             {
-                                lane.CostPerHour = costPerHour;
-                            }
-                            break;
-                        case "Allow to Enter":
-                            if (float.TryParse(newValue, out float length))
-                            {
-                                lane.Length = length;
-                            }
-                            break;
-                        case "Price for Entry":
-                            if (float.TryParse(newValue, out float depth))
-                            {
-                                lane.Depth = depth;
+                                holiday.PricePerEntry = price;
                             }
                             break;
                     }
-
-                    await Database.UpdateLaneAsync(lane.ID, lane.Name!, lane.CostPerHour, lane.Length, lane.Depth);
+                    await Database.UpdateHolidayAsync(holiday.ID, holiday.Name!, holiday.Date, holiday.AllowToEnter, holiday.PricePerEntry);
                 }
             }
         }

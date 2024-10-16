@@ -97,12 +97,27 @@ public partial class ManageUsersViewModel : ObservableObject
                     switch (column.Header.ToString())
                     {
                         case "Name":
+                            if (string.IsNullOrEmpty(newValue))
+                            {
+                                ((TextBox)e.EditingElement).Text = user.Name;
+                                return;
+                            }
                             user.Name = newValue;
                             break;
                         case "Email":
+                            if (string.IsNullOrEmpty(newValue))
+                            {
+                                ((TextBox)e.EditingElement).Text = user.Email;
+                                return;
+                            }
                             user.Email = newValue;
                             break;
                         case "PhoneNumber":
+                            if (string.IsNullOrEmpty(newValue))
+                            {
+                                ((TextBox)e.EditingElement).Text = user.PhoneNumber;
+                                return;
+                            }
                             user.PhoneNumber = newValue;
                             break;
                     }
