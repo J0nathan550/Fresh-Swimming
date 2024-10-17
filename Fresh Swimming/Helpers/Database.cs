@@ -98,7 +98,7 @@ public static class Database
             try
             {
                 // Step 1: Delete dependent records from 'reservation' table
-                string sqlQueryDeleteReservations = "DELETE FROM reservation WHERE FK_User = @Id";
+                string sqlQueryDeleteReservations = "DELETE FROM reservations WHERE FK_User = @Id";
                 await dbConnection.ExecuteAsync(sqlQueryDeleteReservations, new { Id = id }, transaction);
 
                 // Step 2: Delete the user record itself
@@ -208,7 +208,7 @@ public static class Database
         try
         {
             using IDbConnection dbConnection = new MySqlConnection(MYSQL_CONNECTION_STRING);
-            string sqlQuery = "INSERT INTO lane (Name, CostPerHour, Length, Depth) VALUES (@Name, @CostPerHour, @Length, @Depth)";
+            string sqlQuery = "INSERT INTO lanes (Name, CostPerHour, Length, Depth) VALUES (@Name, @CostPerHour, @Length, @Depth)";
             await dbConnection.ExecuteAsync(sqlQuery, new { Name = textBoxName, CostPerHour = costPerHour, Length = length, Depth = depth });
         }
         catch
@@ -230,7 +230,7 @@ public static class Database
         try
         {
             using IDbConnection dbConnection = new MySqlConnection(MYSQL_CONNECTION_STRING);
-            string sqlQuery = "SELECT * FROM lane";
+            string sqlQuery = "SELECT * FROM lanes";
             List<Lane> convert = (await dbConnection.QueryAsync<Lane>(sqlQuery)).ToList();
             ObservableCollection<Lane> lanes = new(convert);
             return lanes;
@@ -255,7 +255,7 @@ public static class Database
         try
         {
             using IDbConnection dbConnection = new MySqlConnection(MYSQL_CONNECTION_STRING);
-            string sqlQuery = "SELECT Id FROM lane WHERE Name = @Name";
+            string sqlQuery = "SELECT Id FROM lanes WHERE Name = @Name";
             return await dbConnection.QueryFirstAsync<int>(sqlQuery, new { Name = name });
         }
         catch
@@ -279,7 +279,7 @@ public static class Database
         try
         {
             using IDbConnection dbConnection = new MySqlConnection(MYSQL_CONNECTION_STRING);
-            string sqlQuery = "SELECT COUNT(id) FROM lane WHERE name = @Name";
+            string sqlQuery = "SELECT COUNT(id) FROM lanes WHERE name = @Name";
             return await dbConnection.QueryFirstAsync<int>(sqlQuery, new { Name = name }) > 0;
         }
         catch
@@ -302,7 +302,7 @@ public static class Database
         try
         {
             using IDbConnection dbConnection = new MySqlConnection(MYSQL_CONNECTION_STRING);
-            string sqlQuery = @"UPDATE lane SET Name = @Name, CostPerHour = @CostPerHour, Length = @Length, Depth = @Depth WHERE ID = @LaneId";
+            string sqlQuery = @"UPDATE lanes SET Name = @Name, CostPerHour = @CostPerHour, Length = @Length, Depth = @Depth WHERE ID = @LaneId";
             await dbConnection.ExecuteAsync(sqlQuery, new
             {
                 LaneId = laneId,
@@ -338,11 +338,11 @@ public static class Database
             try
             {
                 // Step 1: Delete dependent records from 'reservation' table
-                string sqlQueryDeleteReservations = "DELETE FROM reservation WHERE FK_Lane = @Id";
+                string sqlQueryDeleteReservations = "DELETE FROM reservations WHERE FK_Lane = @Id";
                 await dbConnection.ExecuteAsync(sqlQueryDeleteReservations, new { Id = id }, transaction);
 
                 // Step 2: Delete the lane record itself
-                string sqlQueryDeleteLane = "DELETE FROM lane WHERE ID = @Id";
+                string sqlQueryDeleteLane = "DELETE FROM lanes WHERE ID = @Id";
                 await dbConnection.ExecuteAsync(sqlQueryDeleteLane, new { Id = id }, transaction);
 
                 // Commit the transaction if both operations succeed
@@ -501,7 +501,7 @@ public static class Database
             using IDbConnection dbConnection = new MySqlConnection(MYSQL_CONNECTION_STRING);
 
             // Get all lanes
-            string sqlQuery = "SELECT * FROM lane";
+            string sqlQuery = "SELECT * FROM lanes";
             List<Lane> lanes = (await dbConnection.QueryAsync<Lane>(sqlQuery)).ToList();
 
             sqlQuery = "SELECT * FROM holidays WHERE Date = @Date";
@@ -513,7 +513,7 @@ public static class Database
             foreach (Lane lane in lanes)
             {
                 // Get reservations for each lane
-                sqlQuery = $"SELECT reservation.StartHour, reservation.EndHour, users.Color, users.Name FROM reservation INNER JOIN users ON users.ID = reservation.FK_User WHERE FK_Lane = @Lane AND Date = @Date";
+                sqlQuery = $"SELECT reservations.StartHour, reservations.EndHour, users.Color, users.Name FROM reservations INNER JOIN users ON users.ID = reservations.FK_User WHERE FK_Lane = @Lane AND Date = @Date";
                 List<dynamic> listReservation = (await dbConnection.QueryAsync(sqlQuery, new { Lane = lane.ID, Date = dateTwo })).ToList();
 
                 Reservation reservation;
@@ -636,7 +636,7 @@ public static class Database
         try
         {
             using IDbConnection dbConnection = new MySqlConnection(MYSQL_CONNECTION_STRING);
-            string sqlQuery = "INSERT INTO reservation (Date, StartHour, EndHour, FK_User, FK_Lane) VALUES (@Date, @StartHour, @EndHour, @ID_User, @ID_Lane)";
+            string sqlQuery = "INSERT INTO reservations (Date, StartHour, EndHour, FK_User, FK_Lane) VALUES (@Date, @StartHour, @EndHour, @ID_User, @ID_Lane)";
             int laneID = await GetLaneIDByNameAsync(laneName);
             await dbConnection.ExecuteAsync(sqlQuery, new { Date = selectedDate, StartHour = startHour, EndHour = endHour, ID_User = userID, ID_Lane = laneID });
         }
@@ -661,7 +661,7 @@ public static class Database
         try
         {
             using IDbConnection dbConnection = new MySqlConnection(MYSQL_CONNECTION_STRING);
-            string sqlQuery = "SELECT COUNT(id) FROM reservation WHERE FK_Lane = @ID_Lane AND StartHour >= @StartHour AND EndHour <= @EndHour AND Date = @Date";
+            string sqlQuery = "SELECT COUNT(id) FROM reservations WHERE FK_Lane = @ID_Lane AND StartHour >= @StartHour AND EndHour <= @EndHour AND Date = @Date";
             int laneID = await GetLaneIDByNameAsync(laneName);
             return await dbConnection.QueryFirstAsync<int>(sqlQuery, new { Date = selectedDate, StartHour = startHour, EndHour = endHour, ID_Lane = laneID }) > 0;
         }
@@ -690,9 +690,9 @@ public static class Database
             string sqlQuery;
 
             if (!showForAllDays)
-                sqlQuery = "SELECT StartHour, EndHour FROM reservation WHERE Date = @Date";
+                sqlQuery = "SELECT StartHour, EndHour FROM reservations WHERE Date = @Date";
             else
-                sqlQuery = "SELECT StartHour, EndHour FROM reservation";
+                sqlQuery = "SELECT StartHour, EndHour FROM reservations";
 
             IEnumerable<dynamic> query = await dbConnection.QueryAsync(sqlQuery, new { Date = date });
             int total = 0;
@@ -728,9 +728,9 @@ public static class Database
             string sqlQuery;
 
             if (!showForAllDays)
-                sqlQuery = "SELECT reservation.StartHour, reservation.EndHour, users.Skill, users.ID FROM reservation JOIN users ON FK_User = users.ID WHERE reservation.Date = @Date";
+                sqlQuery = "SELECT reservations.StartHour, reservations.EndHour, users.Skill, users.ID FROM reservations JOIN users ON FK_User = users.ID WHERE reservations.Date = @Date";
             else
-                sqlQuery = "SELECT reservation.StartHour, reservation.EndHour, users.Skill, users.ID FROM reservation JOIN users ON FK_User = users.ID";
+                sqlQuery = "SELECT reservations.StartHour, reservations.EndHour, users.Skill, users.ID FROM reservations JOIN users ON FK_User = users.ID";
 
             HashSet<int> users = []; // Initialize the HashSet
             IEnumerable<dynamic> query = await dbConnection.QueryAsync<dynamic>(sqlQuery, new { Date = date });
@@ -782,9 +782,9 @@ public static class Database
             string sqlQuery;
 
             if (!showForAllDays)
-                sqlQuery = "SELECT reservation.StartHour, reservation.EndHour, lane.Name FROM reservation RIGHT JOIN lane ON reservation.FK_Lane = lane.ID WHERE reservation.Date = @Date";
+                sqlQuery = "SELECT reservations.StartHour, reservations.EndHour, lanes.Name FROM reservations RIGHT JOIN lanes ON reservations.FK_Lane = lanes.ID WHERE reservations.Date = @Date";
             else
-                sqlQuery = "SELECT reservation.StartHour, reservation.EndHour, lane.Name FROM reservation RIGHT JOIN lane ON reservation.FK_Lane = lane.ID";
+                sqlQuery = "SELECT reservations.StartHour, reservations.EndHour, lanes.Name FROM reservations RIGHT JOIN lanes ON reservations.FK_Lane = lanes.ID";
 
             IEnumerable<dynamic> query = await dbConnection.QueryAsync<dynamic>(sqlQuery, new { Date = date });
             Dictionary<string, int> laneUsage = [];
@@ -825,7 +825,7 @@ public static class Database
         try
         {
             using IDbConnection dbConnection = new MySqlConnection(MYSQL_CONNECTION_STRING);
-            string sqlQuery = "SELECT lane.ID, lane.CostPerHour, reservation.StartHour, reservation.EndHour, reservation.Date FROM reservation LEFT JOIN lane ON reservation.FK_Lane = lane.ID WHERE reservation.Paid = 0 AND reservation.FK_User = @UserID";
+            string sqlQuery = "SELECT lanes.ID, lanes.CostPerHour, reservations.StartHour, reservations.EndHour, reservations.Date FROM reservations LEFT JOIN lanes ON reservations.FK_Lane = lanes.ID WHERE reservations.Paid = 0 AND reservations.FK_User = @UserID";
             IEnumerable<dynamic> paymentPerLane = await dbConnection.QueryAsync<dynamic>(sqlQuery, new { UserID = userID });
             sqlQuery = "SELECT * FROM holidays";
             IEnumerable<dynamic> holidays = await dbConnection.QueryAsync<dynamic>(sqlQuery);
@@ -880,9 +880,9 @@ public static class Database
             string sqlQuery;
 
             if (!showForAllDays)
-                sqlQuery = "SELECT reservation.StartHour, reservation.EndHour, lane.Name, lane.CostPerHour FROM reservation RIGHT JOIN lane ON reservation.FK_Lane = lane.ID WHERE reservation.Date = @Date";
+                sqlQuery = "SELECT reservations.StartHour, reservations.EndHour, lanes.Name, lanes.CostPerHour FROM reservations RIGHT JOIN lanes ON reservations.FK_Lane = lanes.ID WHERE reservations.Date = @Date";
             else
-                sqlQuery = "SELECT reservation.StartHour, reservation.EndHour, lane.Name, lane.CostPerHour FROM reservation RIGHT JOIN lane ON reservation.FK_Lane = lane.ID";
+                sqlQuery = "SELECT reservations.StartHour, reservations.EndHour, lanes.Name, lanes.CostPerHour FROM reservations RIGHT JOIN lanes ON reservations.FK_Lane = lanes.ID";
 
             IEnumerable<dynamic> query = await dbConnection.QueryAsync<dynamic>(sqlQuery, new { Date = date });
             Dictionary<string, float> profit = [];
@@ -928,7 +928,7 @@ public static class Database
         try
         {
             using IDbConnection dbConnection = new MySqlConnection(MYSQL_CONNECTION_STRING);
-            string sqlQuery = "UPDATE reservation SET Paid = 1 WHERE FK_User = @UserID AND Paid = 0";
+            string sqlQuery = "UPDATE reservations SET Paid = 1 WHERE FK_User = @UserID AND Paid = 0";
             await dbConnection.ExecuteAsync(sqlQuery, new { UserID = userID });
         }
         catch
