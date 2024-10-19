@@ -22,6 +22,7 @@
         </Button>
         <DataGrid Name="DataGridLane" Grid.Row="1" Margin="5" Grid.Column="0" ItemsSource="{Binding Lanes}" AutoGenerateColumns="False" AlternatingRowBackground="#F0F0F0" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False">
             <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding ID}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
                 <DataGridTextColumn Header="Cost per Hour" Binding="{Binding CostPerHourAsString}"/>
                 <DataGridTextColumn Header="Length" Binding="{Binding Length}"/>

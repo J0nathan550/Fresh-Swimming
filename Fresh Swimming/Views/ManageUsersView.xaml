@@ -22,6 +22,7 @@
         </Button>
         <DataGrid Name="DataGridUsers" Grid.Row="1" Margin="5" Grid.Column="0" ItemsSource="{Binding Users}" AutoGenerateColumns="False" AlternatingRowBackground="#F0F0F0" CanUserAddRows="False" CanUserDeleteRows="False" CanUserReorderColumns="False">
             <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True"/>
                 <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
                 <DataGridTextColumn Header="Email" Binding="{Binding Email}"/>
                 <DataGridTextColumn Header="Phone Number" Binding="{Binding PhoneNumber}"/>
